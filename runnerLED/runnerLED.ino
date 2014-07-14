@@ -75,17 +75,20 @@ void loop() {
   for (int i=0; i <= numPixels; i++) {
     overlap=0;
     strip.setPixelColor(i, 0);
+    /*
     for(int j=0; j<pastCheckNum; j++){
       if(i <=  pastVals[j]){
         overlap++;
         //strip.setPixelColor(i, j*2,0,j);
       }
     }
+    */
 
     if(i <=  litLEDs){
       overlap++;
+          strip.setPixelColor(i, 10, 10, 10);
+
     }
-    strip.setPixelColor(i, overlap*10, overlap*5, overlap*10);
   }
   strip.show();
 }
