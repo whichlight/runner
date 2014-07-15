@@ -53,12 +53,7 @@ void loop() {
   pulse = rangeSensorPW.getRange();
   meterVal = map(pulse, sonar_low, sonar_high, first_led, total_leds);
 
-  Serial.print(pulse);
-  Serial.print(" cm, ");
   Serial.print(meterVal);
-  Serial.print(" val");
-  Serial.print(litLEDs);
-  Serial.print(" LED");
   Serial.println();
 
 
