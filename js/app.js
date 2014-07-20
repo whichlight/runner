@@ -82,6 +82,7 @@ var touchActivate = function(e){
 var touchDeactivate = function(e){
   cy=0;
   yRatio = 0;
+  runners[id].x = yRatio;
   if(touching){
     socket.emit('motion',{x:0, rgb: rgb_base_color, type: 0, id:id});
   }

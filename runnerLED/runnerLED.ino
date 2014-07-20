@@ -7,8 +7,6 @@
 
 int dataPin = 8;
 int clockPin = 9;
-
-
 int meterVal = 0;
 int litLEDs = 0;
 int maxVal = 30;
@@ -18,9 +16,10 @@ int sonar_low = 10;
 int first_led = 0;
 int colorThresh = 150;
 const int total_leds = 160;
+int numPixels;
+int h=0x0;
 
-const int  pastCheckNum=5;
-int pastVals[pastCheckNum];
+int ledIndex = 0;
 
 
 const int pwPin = 7;
@@ -33,60 +32,48 @@ LPD8806 strip = LPD8806(total_leds, dataPin, clockPin);
 void setup() {
   Serial.begin(9600);
   strip.begin();
-
-  for(int i=0; i<pastCheckNum; i++){
-    pastVals[i]=0; 
+  numPixels = strip.numPixels();
+  
+  //init
+  for (int i=0; i < total_leds; i++) {
+    strip.setPixelColor(i, 0x010101);
   }
+  strip.show();
+
 }
 
 
 void loop() {
 
-
-  for(int i=0; i<pastCheckNum; i++){
-    pastVals[i]=pastVals[i+1]; 
-  }
-  pastVals[pastCheckNum-1]=litLEDs; 
-
-
-  int numPixels;
   pulse = rangeSensorPW.getRange();
   meterVal = map(pulse, sonar_low, sonar_high, first_led, total_leds);
 
-  Serial.print(meterVal);
-  Serial.println();
-
-
-
+  //Serial.print(meterVal);
+  //Serial.println();
 
   litLEDs= meterVal;
   if (litLEDs > colorThresh){
-   litLEDs = 0; 
+    litLEDs = 0; 
   }
+  
+  //read in array
+  
 
-  int overlap=0;
-
-  numPixels = strip.numPixels();
-  for (int i=0; i <= numPixels; i++) {
-    overlap=0;
-    strip.setPixelColor(i, 0);
-    /*
-    for(int j=0; j<pastCheckNum; j++){
-      if(i <=  pastVals[j]){
-        overlap++;
-        //strip.setPixelColor(i, j*2,0,j);
-      }
-    }
-    */
-
-    if(i <=  litLEDs){
-      overlap++;
-          strip.setPixelColor(i, 10, 10, 10);
-
+  
+  while (Serial.available() > 0) {
+    int r = Serial.parseInt();
+    int g = Serial.parseInt();
+    int b = Serial.parseInt();
+    strip.setPixelColor(ledIndex,r,g,b);
+    ledIndex++;
+    if (ledIndex == 160) {
+      ledIndex=0; 
+      strip.show();
     }
   }
-  strip.show();
+  
 }
+
 
 
 
