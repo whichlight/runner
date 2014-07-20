@@ -26,10 +26,10 @@ serialPort.on("open", function () {
   serialPort.on('data', function(data) {
     position = data.replace(/(\r\n|\n|\r)/gm,"");
     out = {x: position, r:10, g:10, b:10, type:1}
-    socket.emit('meterVal', out);
+    socket.emit('motion', out);
   });
 
-  socket.on('meterVal', function (p) {
+  socket.on('motion', function (p) {
     console.log("from web controls" + p);
     var str = p.x+','+p.r+','+p.g+','+p.b+','+p.type+';';
     serialPort.write(str, function(err, res){

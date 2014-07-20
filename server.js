@@ -10,8 +10,9 @@ var app = require('http').createServer(function (request, response) {
 var io = require('socket.io').listen(app);
 
 io.sockets.on('connection', function (socket) {
-  socket.on('meterVal', function (data) {
-    socket.broadcast.emit("meterVal", data);
+  socket.emit('id',socket.id);
+  socket.on('motion', function (data) {
+    socket.broadcast.emit("motion", data);
     console.log(data);
   });
 });
