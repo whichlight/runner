@@ -1,6 +1,5 @@
 #include "LPD8806.h"
 #include "SPI.h"
-#include "Maxbotix.h"
 
 
 /*****************************************************************************/
@@ -27,7 +26,6 @@ unsigned long time;
 
 
 const int pwPin = 7;
-//Maxbotix rangeSensorPW(pwPin, Maxbotix::PW, Maxbotix::LV, Maxbotix::BEST, 3);
 long pulse, inches, cm;
 
 
@@ -37,7 +35,7 @@ void setup() {
   Serial.begin(115200);
   strip.begin();
   numPixels = strip.numPixels();
-   pinMode(pwPin, INPUT);
+  pinMode(pwPin, INPUT);
 
 
   //init
@@ -83,23 +81,16 @@ void loop() {
         Serial.println();  
         time = millis(); 
       } 
-
-
     }
     else
     {
       inData[index] = aChar;
       index++;
       inData[index] = '\0'; // Keep the string NULL terminated
-
-
     }
-
-
-
-
   }
 }
+
 
 
 
