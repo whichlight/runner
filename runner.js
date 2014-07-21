@@ -14,19 +14,33 @@ var serialPort = new SerialPort("/dev/tty.usbmodem1421", {
 */
 
 var numLEDs = 160;
-var LEDs= new Array(numLEDs);
-var LEDs_stage= new Array(numLEDs);
 var id;
 var updated = true;
 
 var runners = {};
 var base_color ="0x000101";
+var dist_floor = 0.4;
 
-for(var i=0; i<numLEDs; i++){
-  LEDs[i]="0x000101";
+
+
+var sonar_data = new Sonar();
+
+function Sonar(){
+  this.buffer = [];
+  this.size = 10;
 }
 
-LEDs_stage = LEDs;
+Sonar.prototype.push= function(d){
+  this.buffer.push(d);
+  if(this.buffer.length>this.size){
+    this.buffer.shift();
+  }
+}
+
+Sonar.prototype.getVal = function(){
+    var s = this.buffer.slice().sort();
+    return s[Math.floor((s.length - 1) / 2)];
+}
 
 socket.on('id', function(data){
   console.log(data);
@@ -73,9 +87,16 @@ serialPort.on("open", function () {
 
     position = data.replace(/(\r\n|\n|\r)/gm,"");
     var val = position/numLEDs;
+    val = 1-val;
+    if(val<dist_floor){val=dist_floor;};
+    val = map_range(val, dist_floor, 1, 0, 1);
+    if(val<0){val=0};
+    sonar_data.push(val);
+
     if(id in runners){
-      runners[id].x = val;
-      out = {x: val, rgb: runners[id].rgb, id: id, type:1}
+      var filtered = sonar_data.getVal();
+      runners[id].x = filtered;
+      out = {x: filtered, rgb: runners[id].rgb, id: id, type:1}
       socket.emit('motion', out);
     }
   });
@@ -118,7 +139,7 @@ serialPort.on("open", function () {
       var calm = "0x000001";
       write([Math.floor(rects[rects.length-1].x*numLEDs),numLEDs-1,calm].join(',')+';');
 
-  },500);
+  },100);
 
 });
 
@@ -128,15 +149,6 @@ function write(str){
   serialPort.write(str, function(err, res){
     if (err) console.log('err '+err);
   });
-}
-
-
-
-function updateLEDs(){
-   if(!updated){
-     LEDs = LEDs_stage.slice();
-   }
-   updated = true;
 }
 
 function componentToHex(c) {
@@ -151,4 +163,8 @@ function rgbToHex(r, g, b) {
 
 function hexToInt(str){
    return parseInt(str,16);
+}
+
+function map_range(value, low1, high1, low2, high2) {
+      return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
 }

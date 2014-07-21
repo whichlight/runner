@@ -27,7 +27,7 @@ unsigned long time;
 
 
 const int pwPin = 7;
-Maxbotix rangeSensorPW(pwPin, Maxbotix::PW, Maxbotix::LV, Maxbotix::BEST, 3);
+//Maxbotix rangeSensorPW(pwPin, Maxbotix::PW, Maxbotix::LV, Maxbotix::BEST, 3);
 long pulse, inches, cm;
 
 
@@ -37,6 +37,8 @@ void setup() {
   Serial.begin(115200);
   strip.begin();
   numPixels = strip.numPixels();
+   pinMode(pwPin, INPUT);
+
 
   //init
   for (int i=0; i < total_leds; i++) {
@@ -73,9 +75,11 @@ void loop() {
 
       strip.show();
       if((millis() - time)>30){
-        //pulse = rangeSensorPW.getRange();
-        //meterVal = map(pulse, sonar_low, sonar_high, first_led, total_leds);
-        Serial.print(10);
+        pulse = pulseIn(pwPin, HIGH);
+        inches = pulse/147;
+        cm = inches * 2.54;
+        meterVal = map(cm, sonar_low, sonar_high, first_led, total_leds);
+        Serial.print(meterVal);
         Serial.println();  
         time = millis(); 
       } 
