@@ -21,6 +21,10 @@ int h=0x0;
 
 int ledIndex = 0;
 
+char inData[80];
+byte index = 0;
+unsigned long time;
+
 
 const int pwPin = 7;
 Maxbotix rangeSensorPW(pwPin, Maxbotix::PW, Maxbotix::LV, Maxbotix::BEST, 3);
@@ -30,10 +34,10 @@ long pulse, inches, cm;
 LPD8806 strip = LPD8806(total_leds, dataPin, clockPin);
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   strip.begin();
   numPixels = strip.numPixels();
-  
+
   //init
   for (int i=0; i < total_leds; i++) {
     strip.setPixelColor(i, 0x010101);
@@ -45,34 +49,56 @@ void setup() {
 
 void loop() {
 
-  pulse = rangeSensorPW.getRange();
-  meterVal = map(pulse, sonar_low, sonar_high, first_led, total_leds);
-
-  //Serial.print(meterVal);
-  //Serial.println();
-
-  litLEDs= meterVal;
-  if (litLEDs > colorThresh){
-    litLEDs = 0; 
-  }
-  
+  time = millis();
   //read in array
-  
 
-  
   while (Serial.available() > 0) {
-    int r = Serial.parseInt();
-    int g = Serial.parseInt();
-    int b = Serial.parseInt();
-    strip.setPixelColor(ledIndex,r,g,b);
-    ledIndex++;
-    if (ledIndex == 160) {
-      ledIndex=0; 
-      strip.show();
+    char aChar = Serial.read();
+    if(aChar == ';')
+    {
+      // End of record detected. Time to parse
+      long int col;
+      char *p = inData; 
+      char *str;
+      int indexStart = atoi(strtok_r(p, ",", &p));
+      int indexEnd = atoi(strtok_r(p, ",", &p));
+      str = strtok_r(p, ",", &p);
+      col = strtol(str, &str,16);
+      for(int i=indexStart; i<indexEnd; i++){
+        strip.setPixelColor(i,col);
+      }
+      index = 0;
+      inData[index] = NULL;
+
+      if((millis() - time)>100){
+        pulse = rangeSensorPW.getRange();
+        meterVal = map(pulse, sonar_low, sonar_high, first_led, total_leds);
+        Serial.print(meterVal);
+        Serial.println();  
+        time = millis();   
+      }
     }
+    else
+    {
+      inData[index] = aChar;
+      index++;
+      inData[index] = '\0'; // Keep the string NULL terminated
+
+
+    }
+
+
+    strip.show();
+
+
+
   }
-  
 }
+
+
+
+
+
 
 
 
