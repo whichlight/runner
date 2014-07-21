@@ -51,6 +51,7 @@ void loop() {
 
   time = millis();
   //read in array
+  strip.show();
 
   while (Serial.available() > 0) {
     char aChar = Serial.read();
@@ -70,13 +71,16 @@ void loop() {
       index = 0;
       inData[index] = NULL;
 
-      if((millis() - time)>100){
-        pulse = rangeSensorPW.getRange();
-        meterVal = map(pulse, sonar_low, sonar_high, first_led, total_leds);
-        Serial.print(meterVal);
+      strip.show();
+      if((millis() - time)>30){
+        //pulse = rangeSensorPW.getRange();
+        //meterVal = map(pulse, sonar_low, sonar_high, first_led, total_leds);
+        Serial.print(10);
         Serial.println();  
-        time = millis();   
-      }
+        time = millis(); 
+      } 
+
+
     }
     else
     {
@@ -88,12 +92,13 @@ void loop() {
     }
 
 
-    strip.show();
-
 
 
   }
 }
+
+
+
 
 
 

@@ -118,7 +118,7 @@ serialPort.on("open", function () {
       var calm = "0x000001";
       write([Math.floor(rects[rects.length-1].x*numLEDs),numLEDs-1,calm].join(',')+';');
 
-  },1000);
+  },500);
 
 });
 
