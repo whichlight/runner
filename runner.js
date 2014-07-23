@@ -1,9 +1,9 @@
 var serialport = require("serialport"),
-    socket = require('socket.io-client')('http://localhost:8000');
+    socket = require('socket.io-client')('http://runner.nodejitsu.com');
 
 
 var SerialPort = serialport.SerialPort;
-var serialPort = new SerialPort("/dev/tty.usbmodem1421", {
+var serialPort = new SerialPort("/dev/tty.usbmodem1411", {
     baudrate: 115200,
     parser: serialport.parsers.readline("\n")
 });
@@ -124,20 +124,21 @@ serialPort.on("open", function () {
      }
    }
 
+   if(rects.length >0){
+     //first
+     write([0,Math.floor(rects[initial].x*numLEDs), rects[initial].hex].join(',')+';');
 
-   //first
-    write([0,Math.floor(rects[initial].x*numLEDs), rects[initial].hex].join(',')+';');
+     //middle
+     for(var i=initial; i<rects.length-1; i++){
+       var p1 = Math.floor(rects[i].x*numLEDs)
+         var p2 = Math.floor(rects[i+1].x*numLEDs)
+         write([p1,p2,rects[i+1].hex].join(',')+';');
+     }
 
-   //middle
-    for(var i=initial; i<rects.length-1; i++){
-      var p1 = Math.floor(rects[i].x*numLEDs)
-      var p2 = Math.floor(rects[i+1].x*numLEDs)
-      write([p1,p2,rects[i+1].hex].join(',')+';');
-    }
-
-   //last
-      var calm = "0x000001";
-      write([Math.floor(rects[rects.length-1].x*numLEDs),numLEDs-1,calm].join(',')+';');
+     //last
+     var calm = "0x000001";
+     write([Math.floor(rects[rects.length-1].x*numLEDs),numLEDs-1,calm].join(',')+';');
+   }
 
   },100);
 

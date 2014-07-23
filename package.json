@@ -1,0 +1,38 @@
+{
+  "name": "runner",
+  "version": "0.0.0-4",
+  "description": "controlling an led strip with the browser and websockets",
+  "main": "server.js",
+  "dependencies": {
+    "node-static": "~0.7.4",
+    "socket.io": "~1.0.6"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/whichlight/runner.git"
+  },
+  "keywords": [
+    "led",
+    "websockets",
+    "hardware",
+    "art"
+  ],
+  "author": "whichlight",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/whichlight/runner/issues"
+  },
+  "subdomain": "runner",
+  "engines": {
+    "node": "0.10.x"
+  },
+  "domains": [
+    "runner.dance",
+    "www.runner.dance"
+  ]
+}
